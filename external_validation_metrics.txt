@@ -1,0 +1,61 @@
+=== EXTERNAL VALIDATION METRICS ===
+Dataset : Kaggle Asthma Detection Dataset v2
+Model   : ResNet-18 (ImageNet pretrained, custom head)
+Run Tag : resnet18_robust_final
+Total Samples : 1211
+
+--- Sample Distribution ---
+COPD              401
+Bronchiectasis    392
+Pneumonia         285
+Healthy           133
+
+--- Overall Metrics ---
+Overall Accuracy  : 47.9%
+Macro F1-Score    : 35.5%
+Weighted F1-Score : 41.0%
+
+--- Per-Class Classification Report ---
+                 precision    recall  f1-score   support
+
+Bronchiectasis       0.91      0.08      0.14       392
+          COPD       0.44      0.96      0.60       401
+       Healthy       0.78      0.53      0.63       133
+     Pneumonia       0.51      0.33      0.40       285
+          URTI       0.00      0.00      0.00         0
+
+      accuracy                           0.48      1211
+     macro avg       0.53      0.38      0.36      1211
+  weighted avg       0.65      0.48      0.41      1211
+
+--- Per-Class Accuracy ---
+Bronchiectasis : 31/392  =  7.9%
+COPD           : 385/401 = 96.0%
+Healthy        : 71/133  = 53.4%
+Pneumonia      : 94/285  = 33.0%
+URTI           : 0/0     = N/A (not present in external set)
+
+--- Confusion Matrix ---
+Class Order: ['Bronchiectasis', 'COPD', 'Healthy', 'Pneumonia']
+
+Rows = True Label | Columns = Predicted Label
+
+                  Bronchiectasis   COPD   Healthy   Pneumonia
+Bronchiectasis         31          261       9         91
+COPD                    1          385       3         12
+Healthy                 0           57      71          5
+Pneumonia               2          155       7         94 (+ 2 URTI)
+
+--- Key Observations ---
+- COPD recall is 96%  : model learned COPD patterns very well (dominant training class)
+- Bronchiectasis recall is only 8% : acoustically similar to COPD, domain shift from Kaggle data
+- Healthy precision is 78% : when model says Healthy, it is usually right
+- Pneumonia recall is 33% : significant confusion with COPD
+- URTI absent from external set : 0 support, not evaluated
+
+--- Notes ---
+- Training dataset : ICBHI 2017 Respiratory Sound Database
+- External dataset : Kaggle Asthma Detection Dataset v2 (different recording conditions)
+- Low Bronchiectasis recall is expected due to domain shift (different microphones/environments)
+  and acoustic overlap with COPD wheezing patterns
+- Macro F1 of 35.5% reflects the hard generalization challenge across datasets
